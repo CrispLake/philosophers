@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:23:12 by emajuri           #+#    #+#             */
-/*   Updated: 2023/02/23 18:05:43 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/02/24 15:19:49 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,20 +20,26 @@
 # include <pthread.h>
 # include <stdlib.h>
 
-typedef struct s_seat
+
+typedef struct s_fork
+{
+	int				fork_taken;
+	pthread_mutex_t	fork_mutex;
+} t_fork;
+
+typedef struct s_philo
 {
 	int				philo;
 	int				eat_time;
-	int				fork_taken;
-	pthread_mutex_t	fork_mutex;
 	pthread_t		thread;
-	struct s_seat	*right;
-	struct s_seat	*left;
-} t_seat;
+	struct s_fork	*right;
+	struct s_fork	*left;
+} t_philo;
 
 typedef struct s_vars
 {
-	t_seat	*table;
+	t_fork			*forks;
+	t_philo			*philos;
 	int				philo_count;
 	int				time_to_die;
 	int				time_to_eat;
@@ -45,6 +51,12 @@ typedef struct s_vars
 	pthread_mutex_t	game_mutex;
 	pthread_mutex_t	print_mutex;
 } t_vars;
+
+typedef struct s_args
+{
+	t_vars	*vars;
+	t_philo	*philo;
+} t_args;
 
 void	init_vars(t_vars *vars, char **argv);
 int		check_and_atoi(char *nb);

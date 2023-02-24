@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:22:54 by emajuri           #+#    #+#             */
-/*   Updated: 2023/02/23 18:06:07 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/02/24 16:16:57 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,34 +25,58 @@ int	calc_time(t_vars *vars)
 	return (time - vars->start_time);
 }
 
-int	create_philo(int count, t_vars *vars)
+int	create_forks(t_vars *vars)
 {
-	t_seat		*seat;
+	t_fork	*forks;
+	int	i;
 
-	seat = p_calloc(sizeof(t_seat), 1);
-	seat->philo = count;
-	if (pthread_mutex_init(&(seat->fork_mutex), NULL))
+	i = 0;
+	vars->forks = p_calloc(sizeof(t_fork), vars->philo_count);
+	if (!vars->forks)
 		return (-1);
-	pthread_create(&(seat->thread), NULL, &routine, vars);
+	forks = vars->forks;
+	while (i < vars->philo_count)
+	{
+		if (pthread_mutex_init(&(forks[i].fork_mutex), NULL))
+			return (-1);
+		i++;
+	}
+	return (0);
+}
+
+int	create_philos(t_vars *vars)
+{
+	t_philo	*philos;
+	int		i;
+
+	vars->philos = p_calloc(sizeof(t_philo), vars->philo_count);
+	if (!vars->philos)
+		return (-1);
+	philos = vars->philos;
+	i = 0;
+	while (i < vars->philo_count)
+	{
+		philos[i].right = &((vars->forks)[i]);
+		if (i == 0)
+			philos[i].left = &((vars->forks)[vars->philo_count - 1]);
+		else
+			philos[i].left = &((vars->forks)[i - 1]);
+		i++;
+	}
 	return (0);
 }
 
 int	start_sim(t_vars *vars)
 {
-	int		count;
-
-	count = 1;
 	if (pthread_mutex_init(&(vars->game_mutex), NULL))
 		return (-1);
 	if (pthread_mutex_init(&(vars->print_mutex), NULL))
 		return (-1);
+	if (create_forks(vars))
+		return (-1);
 	pthread_mutex_lock(&(vars->game_mutex));
-	while (count <= vars->philo_count)
-	{
-		if (create_philo(count, vars))
-			return (-1);
-		count++;
-	}
+	if (create_philos(vars))
+		return (-1);
 	pthread_mutex_unlock(&(vars->game_mutex));
 	return (0);
 }
