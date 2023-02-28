@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/23 17:52:12 by emajuri           #+#    #+#             */
-/*   Updated: 2023/02/23 17:55:23 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/02/28 14:05:00 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,3 +31,16 @@ void	*p_calloc(size_t count, size_t size)
 	p_bzero(ptr, (count * size));
 	return ((void *)ptr);
 }
+
+int	calc_time(t_vars *vars)
+{
+	size_t			time;
+	struct timeval	timeval;
+
+	gettimeofday(&timeval, NULL);
+	time = (timeval.tv_sec * 1000) + (timeval.tv_usec / 1000);
+	if (vars->start_time == 0)
+		vars->start_time = time;
+	return (time - vars->start_time);
+}
+

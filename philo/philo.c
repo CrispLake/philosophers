@@ -6,24 +6,12 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:22:54 by emajuri           #+#    #+#             */
-/*   Updated: 2023/02/24 16:16:57 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/02/28 15:18:54 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 #include <pthread.h>
-
-int	calc_time(t_vars *vars)
-{
-	size_t			time;
-	struct timeval	timeval;
-
-	gettimeofday(&timeval, NULL);
-	time = (timeval.tv_sec * 1000) + (timeval.tv_usec / 1000);
-	if (vars->start_time == 0)
-		vars->start_time = time;
-	return (time - vars->start_time);
-}
 
 int	create_forks(t_vars *vars)
 {
@@ -56,6 +44,7 @@ int	create_philos(t_vars *vars)
 	i = 0;
 	while (i < vars->philo_count)
 	{
+		philos[i].vars = vars;
 		philos[i].right = &((vars->forks)[i]);
 		if (i == 0)
 			philos[i].left = &((vars->forks)[vars->philo_count - 1]);
@@ -66,6 +55,22 @@ int	create_philos(t_vars *vars)
 	return (0);
 }
 
+int	create_threads(t_vars *vars)
+{
+	t_philo	*philos;
+	int		i;
+	int		ret;
+
+	i = 0;
+	while (i < vars->philo_count)
+	{
+		philos = vars->philos;
+		if (pthread_create(&(philos.thread), NULL, &routine, philos))
+			return (-1);
+		i++;
+	}
+}
+
 int	start_sim(t_vars *vars)
 {
 	if (pthread_mutex_init(&(vars->game_mutex), NULL))
@@ -74,9 +79,12 @@ int	start_sim(t_vars *vars)
 		return (-1);
 	if (create_forks(vars))
 		return (-1);
-	pthread_mutex_lock(&(vars->game_mutex));
 	if (create_philos(vars))
 		return (-1);
+	pthread_mutex_lock(&(vars->game_mutex));
+	if (create_threads(vars))
+		return (-1);
+	calc_time(vars);
 	pthread_mutex_unlock(&(vars->game_mutex));
 	return (0);
 }
