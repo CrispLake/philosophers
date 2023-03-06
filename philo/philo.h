@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:23:12 by emajuri           #+#    #+#             */
-/*   Updated: 2023/02/28 14:52:18 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/06 13:40:13 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,28 +35,31 @@ typedef struct s_vars
 	int				philo_count;
 	int				time_to_die;
 	int				time_to_eat;
-	int				time_to_sleep;
 	int				times_to_eat;
+	int				time_to_sleep;
 	int				eaten_enough;
 	int				start_time;
 	int				game_end;
 	pthread_mutex_t	game_mutex;
-	pthread_mutex_t	print_mutex;
 } t_vars;
 
 typedef struct s_philo
 {
-	int				philo;
-	int				eat_time;
-	pthread_t		thread;
-	struct s_fork	*right;
-	struct s_fork	*left;
-	t_vars			*vars;
+	int			philo;
+	int			eat_time;
+	int			eat_times;
+	pthread_t	thread;
+	t_fork		*right;
+	t_fork		*left;
+	t_vars		*vars;
 } t_philo;
 
 void	init_vars(t_vars *vars, char **argv);
 int		check_and_atoi(char *nb);
 void	*p_calloc(size_t count, size_t size);
 int		calc_time(t_vars *vars);
+void	*routine(void *philo);
+int		grab_fork(t_philo *philo, int fork);
+void	free_fork(t_philo *philo, int fork);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:22:54 by emajuri           #+#    #+#             */
-/*   Updated: 2023/02/28 15:18:54 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/06 16:43:03 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ int	create_philos(t_vars *vars)
 	i = 0;
 	while (i < vars->philo_count)
 	{
+		philos[i].philo = i + 1;
 		philos[i].vars = vars;
 		philos[i].right = &((vars->forks)[i]);
 		if (i == 0)
@@ -59,23 +60,21 @@ int	create_threads(t_vars *vars)
 {
 	t_philo	*philos;
 	int		i;
-	int		ret;
 
 	i = 0;
 	while (i < vars->philo_count)
 	{
 		philos = vars->philos;
-		if (pthread_create(&(philos.thread), NULL, &routine, philos))
+		if (pthread_create(&(philos[i].thread), NULL, &routine, &philos[i]))
 			return (-1);
 		i++;
 	}
+	return (0);
 }
 
 int	start_sim(t_vars *vars)
 {
 	if (pthread_mutex_init(&(vars->game_mutex), NULL))
-		return (-1);
-	if (pthread_mutex_init(&(vars->print_mutex), NULL))
 		return (-1);
 	if (create_forks(vars))
 		return (-1);
@@ -93,7 +92,7 @@ int	main(int argc, char **argv)
 {
 	t_vars	vars;
 
-	if (argc != 5 || argc != 6)
+	if (argc != 5 && argc != 6)
 	{
 		printf("Incorrect argument count\n");
 		return (0);
@@ -104,7 +103,14 @@ int	main(int argc, char **argv)
 		return (-1);
 	if (start_sim(&vars))
 		return (-1);
-	while (vars.game_end != 1)
-		;
+	while (1)
+	{
+		if (vars.eaten_enough == vars.philo_count)
+		{
+			pthread_mutex_lock(&vars.game_mutex);
+			vars.game_end = 1;
+			pthread_mutex_unlock(&vars.game_mutex);
+		}
+	}
 	return (0);
 }

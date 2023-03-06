@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 20:10:23 by emajuri           #+#    #+#             */
-/*   Updated: 2023/02/22 20:11:14 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/06 14:16:52 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,8 +76,11 @@ int	check_and_atoi(char *nb)
 	if (nb[i] == '+')
 		i++;
 	while (nb[i])
-		if (p_isdigit(nb[i]))
+	{
+		if (!p_isdigit(nb[i]))
 			return (-1);
+		i++;
+	}
 	i = p_strlen(nb);
 	if (i > 10)
 		return (-1);
