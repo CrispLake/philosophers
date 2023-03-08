@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:23:12 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/06 13:40:13 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/09 00:01:22 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,9 @@
 # include <pthread.h>
 # include <stdlib.h>
 
-typedef struct s_fork
-{
-	int				fork_taken;
-	pthread_mutex_t	fork_mutex;
-} t_fork;
+typedef pthread_mutex_t	t_fork;
 
-typedef struct s_philo t_philo;
+typedef struct s_philo	t_philo;
 
 typedef struct s_vars
 {
@@ -41,7 +37,7 @@ typedef struct s_vars
 	int				start_time;
 	int				game_end;
 	pthread_mutex_t	game_mutex;
-} t_vars;
+}	t_vars;
 
 typedef struct s_philo
 {
@@ -52,14 +48,18 @@ typedef struct s_philo
 	t_fork		*right;
 	t_fork		*left;
 	t_vars		*vars;
-} t_philo;
+}	t_philo;
 
 void	init_vars(t_vars *vars, char **argv);
 int		check_and_atoi(char *nb);
 void	*p_calloc(size_t count, size_t size);
 int		calc_time(t_vars *vars);
 void	*routine(void *philo);
-int		grab_fork(t_philo *philo, int fork);
-void	free_fork(t_philo *philo, int fork);
+int		mutex_lock_error(pthread_mutex_t *mutex, int lock);
+int		wait_time(t_philo *philo, int len);
+int		start_sim(t_vars *vars);
+int		function_in_mutex(void f(t_philo *philo),
+			t_philo *philo, const char *msg);
+int		eat(t_philo *philo);
 
 #endif

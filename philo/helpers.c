@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/23 17:52:12 by emajuri           #+#    #+#             */
-/*   Updated: 2023/02/28 14:05:00 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/08 17:06:24 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,3 +44,34 @@ int	calc_time(t_vars *vars)
 	return (time - vars->start_time);
 }
 
+int	mutex_lock_error(pthread_mutex_t *mutex, int lock)
+{
+	if (lock == 1)
+	{
+		if (pthread_mutex_lock(mutex))
+		{
+			printf("Error locking mutex\n");
+			return (-1);
+		}
+	}
+	else
+	{
+		if (pthread_mutex_unlock(mutex))
+		{
+			printf("Error unlocking mutex\n");
+			return (-1);
+		}
+	}
+	return (0);
+}
+
+int	wait_time(t_philo *philo, int len)
+{
+	int	time;
+
+	time = calc_time(philo->vars);
+	time += len;
+	while (time > calc_time(philo->vars))
+		usleep(500);
+	return (0);
+}

@@ -6,85 +6,82 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:22:54 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/06 16:43:03 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/08 23:17:54 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 #include <pthread.h>
 
-int	create_forks(t_vars *vars)
+int	check_death(t_philo *philo)
 {
-	t_fork	*forks;
+	int	time;
+
+	time = calc_time(philo->vars);
+	if (time - philo->eat_time >= philo->vars->time_to_die)
+	{
+		printf("%d %d died\n", time, philo->philo);
+		return (1);
+	}
+	return (0);
+}
+
+int	monitor(t_vars *vars)
+{
+	int	i;
+	int	end;
+
+	end = 0;
+	while (!end)
+	{
+		i = 0;
+		if (mutex_lock_error(&vars->game_mutex, 1))
+			return (-1);
+		while (i < vars->philo_count)
+		{
+			if (check_death(&vars->philos[i]) || \
+				vars->eaten_enough == vars->philo_count)
+			{
+				vars->game_end = 1;
+				end = 1;
+				break ;
+			}
+			i++;
+		}
+		if (mutex_lock_error(&vars->game_mutex, 2))
+			return (-1);
+		usleep(2000);
+	}
+	return (0);
+}
+
+int	wait_all_threads(t_vars *vars)
+{
+	int	i;
+	int	ret;
+
+	i = 0;
+	ret = pthread_join(vars->philos[i].thread, NULL);
+	while (!ret)
+	{
+		i++;
+		ret = pthread_join(vars->philos[i].thread, NULL);
+	}
+	if (ret)
+		return (-1);
+	return (0);
+}
+
+int	destroy_mutexes(t_vars *vars)
+{
 	int	i;
 
 	i = 0;
-	vars->forks = p_calloc(sizeof(t_fork), vars->philo_count);
-	if (!vars->forks)
-		return (-1);
-	forks = vars->forks;
+	pthread_mutex_destroy(&vars->game_mutex);
 	while (i < vars->philo_count)
-	{
-		if (pthread_mutex_init(&(forks[i].fork_mutex), NULL))
-			return (-1);
-		i++;
-	}
-	return (0);
-}
-
-int	create_philos(t_vars *vars)
-{
-	t_philo	*philos;
-	int		i;
-
-	vars->philos = p_calloc(sizeof(t_philo), vars->philo_count);
-	if (!vars->philos)
-		return (-1);
-	philos = vars->philos;
-	i = 0;
-	while (i < vars->philo_count)
-	{
-		philos[i].philo = i + 1;
-		philos[i].vars = vars;
-		philos[i].right = &((vars->forks)[i]);
-		if (i == 0)
-			philos[i].left = &((vars->forks)[vars->philo_count - 1]);
-		else
-			philos[i].left = &((vars->forks)[i - 1]);
-		i++;
-	}
-	return (0);
-}
-
-int	create_threads(t_vars *vars)
-{
-	t_philo	*philos;
-	int		i;
-
-	i = 0;
-	while (i < vars->philo_count)
-	{
-		philos = vars->philos;
-		if (pthread_create(&(philos[i].thread), NULL, &routine, &philos[i]))
-			return (-1);
-		i++;
-	}
-	return (0);
-}
-
-int	start_sim(t_vars *vars)
-{
-	if (pthread_mutex_init(&(vars->game_mutex), NULL))
-		return (-1);
-	if (create_forks(vars))
-		return (-1);
-	if (create_philos(vars))
-		return (-1);
-	pthread_mutex_lock(&(vars->game_mutex));
-	if (create_threads(vars))
-		return (-1);
-	calc_time(vars);
-	pthread_mutex_unlock(&(vars->game_mutex));
+		pthread_mutex_destroy(&vars->forks[i++]);
+	free(vars->forks);
+	free(vars->philos);
 	return (0);
 }
 
@@ -100,17 +97,12 @@ int	main(int argc, char **argv)
 	memset(&vars, 0, sizeof(t_vars));
 	init_vars(&vars, argv + 1);
 	if (vars.philo_count == -1)
-		return (-1);
+		return (destroy_mutexes(&vars));
 	if (start_sim(&vars))
-		return (-1);
-	while (1)
-	{
-		if (vars.eaten_enough == vars.philo_count)
-		{
-			pthread_mutex_lock(&vars.game_mutex);
-			vars.game_end = 1;
-			pthread_mutex_unlock(&vars.game_mutex);
-		}
-	}
-	return (0);
+		return (destroy_mutexes(&vars));
+	if (monitor(&vars))
+		return (destroy_mutexes(&vars));
+	if (wait_all_threads(&vars))
+		return (destroy_mutexes(&vars));
+	return (destroy_mutexes(&vars));
 }

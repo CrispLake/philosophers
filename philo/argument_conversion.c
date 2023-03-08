@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 19:42:52 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/06 14:18:13 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/08 17:06:07 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,4 +53,3 @@ void	init_vars(t_vars *vars, char **argv)
 		vars->times_to_eat = -2;
 	check_vars(vars);
 }
-
