@@ -6,12 +6,11 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:22:54 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/08 23:17:54 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/09 11:56:49 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-#include <pthread.h>
 
 int	check_death(t_philo *philo)
 {
@@ -62,7 +61,7 @@ int	wait_all_threads(t_vars *vars)
 
 	i = 0;
 	ret = pthread_join(vars->philos[i].thread, NULL);
-	while (!ret)
+	while (!ret && i < vars->philo_count - 1)
 	{
 		i++;
 		ret = pthread_join(vars->philos[i].thread, NULL);
