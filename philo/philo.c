@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:22:54 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/09 11:56:49 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/09 14:15:02 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,8 +95,8 @@ int	main(int argc, char **argv)
 	}
 	memset(&vars, 0, sizeof(t_vars));
 	init_vars(&vars, argv + 1);
-	if (vars.philo_count == -1)
-		return (destroy_mutexes(&vars));
+	if (vars.philo_count == -1 || vars.times_to_eat == 0)
+		return (-1);
 	if (start_sim(&vars))
 		return (destroy_mutexes(&vars));
 	if (monitor(&vars))
