@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 23:26:34 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/08 23:53:45 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/09 11:08:17 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,11 @@ int	grab_forks(t_philo *philo)
 	if (mutex_lock_error(fork1, 1))
 		return (-1);
 	if (function_in_mutex(NULL, philo, "has taken a fork"))
+	{
+		mutex_lock_error(fork1, 2);
+		return (-1);
+	}
+	if (fork1 == fork2)
 	{
 		mutex_lock_error(fork1, 2);
 		return (-1);
