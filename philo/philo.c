@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:22:54 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/09 14:15:02 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/11 00:11:19 by crisplake        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int	monitor(t_vars *vars)
 		}
 		if (mutex_lock_error(&vars->game_mutex, 2))
 			return (-1);
-		usleep(2000);
+		usleep(50);
 	}
 	return (0);
 }
