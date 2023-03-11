@@ -6,7 +6,7 @@
 #    By: emajuri <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/24 16:39:22 by emajuri           #+#    #+#              #
-#    Updated: 2023/03/09 11:04:11 by emajuri          ###   ########.fr        #
+#    Updated: 2023/03/11 14:44:37 by emajuri          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,10 +27,10 @@ $(NAME): $(OSRC)
 	cc $(WWW) $(OSRC) -o $(NAME)
 
 clean:
-	rm -f $(OSRC) $(BOSRC)
+	rm -f $(OSRC)
 
 fclean: clean
-	rm -f $(NAME) $(BONUS_NAME)
+	rm -f $(NAME)
 
 %.o: %.c
 	cc $(WWW) -c -o $@ $^
