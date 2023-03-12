@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/23 17:52:12 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/08 17:06:24 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/12 18:31:11 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,6 @@ int	wait_time(t_philo *philo, int len)
 	time = calc_time(philo->vars);
 	time += len;
 	while (time > calc_time(philo->vars))
-		usleep(500);
+		usleep(50);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 19:42:52 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/11 14:43:30 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/12 18:29:58 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void	check_vars(t_vars *vars)
 		printf("Incorrect time_to_sleep\n");
 		vars->philo_count = -1;
 	}
-	if (vars->times_to_eat < 0)
+	if (vars->times_to_eat == -1 || vars->times_to_eat == 0)
 	{
 		printf("Incorrect number_of_times_each_philosopher_must_eat\n");
 		vars->philo_count = -1;
