@@ -5,17 +5,17 @@
 #                                                     +:+ +:+         +:+      #
 #    By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/03/12 19:08:23 by emajuri           #+#    #+#              #
-#    Updated: 2023/03/12 19:08:35 by emajuri          ###   ########.fr        #
+#    Created: 2023/03/12 19:07:49 by emajuri           #+#    #+#              #
+#    Updated: 2023/03/12 19:07:51 by emajuri          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = philo
+BONUS_NAME = philo_bonus
 
-SRC = $(NAME).c argument_conversion.c check_and_atoi.c helpers.c routine.c \
-	  start_simulation.c eat.c
+BSRC = $(BONUS_NAME).c argument_conversion_bonus.c check_and_atoi_bonus.c \
+	   helpers_bonus.c routine_bonus.c start_simulation_bonus.c
 
-OSRC = $(SRC:%.c=%.o)
+BOSRC = $(BSRC:%.c=%.o)
 
 WWW = -Wall -Wextra -Werror
 
@@ -23,14 +23,14 @@ WWW = -Wall -Wextra -Werror
 
 all: $(NAME)
 
-$(NAME): $(OSRC)
-	cc $(WWW) $(OSRC) -o $(NAME)
+$(NAME): $(BOSRC)
+	cc $(WWW) $(BOSRC) -o $(BONUS_NAME)
 
 clean:
-	rm -f $(OSRC)
+	rm -f $(BOSRC)
 
 fclean: clean
-	rm -f $(NAME)
+	rm -f $(BONUS_NAME)
 
 %.o: %.c
 	cc $(WWW) -c -o $@ $^
