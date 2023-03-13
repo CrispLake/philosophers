@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:23:12 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/09 00:01:22 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/13 12:11:18 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void	*routine(void *philo);
 int		mutex_lock_error(pthread_mutex_t *mutex, int lock);
 int		wait_time(t_philo *philo, int len);
 int		start_sim(t_vars *vars);
-int		function_in_mutex(void f(t_philo *philo),
+int		function_in_mutex(void f(t_philo *philo, int time),
 			t_philo *philo, const char *msg);
 int		eat(t_philo *philo);
 

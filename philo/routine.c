@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 10:48:09 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/11 14:43:53 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/13 13:34:53 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	is_dead(int time, int time_to_die, int eat_time)
 	return (0);
 }
 
-int	function_in_mutex(void f(t_philo *philo), t_philo *philo, const char *msg)
+int	function_in_mutex(void f(t_philo *philo, int time), t_philo *philo, const char *msg)
 {
 	t_vars	*vars;
 	int		time;
@@ -34,7 +34,7 @@ int	function_in_mutex(void f(t_philo *philo), t_philo *philo, const char *msg)
 		vars->game_end != 1 && vars->eaten_enough != vars->philo_count)
 	{
 		if (f)
-			f(philo);
+			f(philo, time);
 		printf("%d %d %s\n", time, philo->philo, msg);
 	}
 	else
@@ -61,7 +61,7 @@ void	*routine(void *arg)
 			return (NULL);
 		if (!x && philo->vars->philo_count % 2 == 0)
 			if (philo->philo % 2)
-				wait_time(philo, (philo->vars->time_to_eat / 2));
+				wait_time(philo, (philo->vars->time_to_eat));
 		if (x++ && philo->vars->philo_count % 2)
 			wait_time(philo, philo->vars->time_to_eat);
 		if (eat(philo))

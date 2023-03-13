@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 23:26:34 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/09 11:08:17 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/13 12:10:42 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,10 +55,10 @@ int	grab_forks(t_philo *philo)
 	return (0);
 }
 
-void	update_eat(t_philo *philo)
+void	update_eat(t_philo *philo, int time)
 {
 	philo->eat_times++;
-	philo->eat_time = calc_time(philo->vars);
+	philo->eat_time = time;
 	if (philo->eat_times == philo->vars->times_to_eat)
 		philo->vars->eaten_enough++;
 }
