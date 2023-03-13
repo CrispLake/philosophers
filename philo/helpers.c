@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/23 17:52:12 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/13 12:41:35 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/13 18:04:40 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,13 @@ void	*p_calloc(size_t count, size_t size)
 	return ((void *)ptr);
 }
 
-int	calc_time(t_vars *vars)
+t_microsec	calc_time(t_vars *vars)
 {
-	size_t			time;
+	t_microsec		time;
 	struct timeval	timeval;
 
 	gettimeofday(&timeval, NULL);
-	time = (timeval.tv_sec * 1000) + (timeval.tv_usec / 1000);
+	time = (timeval.tv_sec * 1000 * 1000) + timeval.tv_usec;
 	if (vars->start_time == 0)
 		vars->start_time = time;
 	return (time - vars->start_time);
@@ -65,13 +65,12 @@ int	mutex_lock_error(pthread_mutex_t *mutex, int lock)
 	return (0);
 }
 
-int	wait_time(t_philo *philo, int len)
+void	wait_time(t_philo *philo, t_microsec len)
 {
-	int	time;
+	t_microsec	time;
 
 	time = calc_time(philo->vars);
 	time += len;
 	while (time > calc_time(philo->vars))
 		usleep(100);
-	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:22:54 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/13 15:48:59 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/13 19:04:36 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,15 @@
 
 int	check_death(t_philo *philo)
 {
-	int	time;
+	t_microsec	time;
 
 	time = calc_time(philo->vars);
 	if (time - philo->eat_time >= philo->vars->time_to_die)
 	{
 		if (mutex_lock_error(&philo->vars->game_mutex, 1))
 			return (-1);
-		printf("eat times: %d\neat time: %d\nlate: %d\n", philo->eat_times, philo->eat_time, time - (philo->eat_time + philo->vars->time_to_die));
-		printf("%d %d died\n", philo->eat_time + philo->vars->time_to_die, philo->philo);
+		printf("eat times: %d\neat time: %llu\nlate: %llu\n", philo->eat_times, philo->eat_time, (time - (philo->eat_time + philo->vars->time_to_die)) / 1000);
+		printf("%llu %d died\n", (philo->eat_time + philo->vars->time_to_die) / 1000, philo->philo);
 		return (1);
 	}
 	return (0);

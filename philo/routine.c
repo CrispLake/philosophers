@@ -6,24 +6,24 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 10:48:09 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/13 14:13:29 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/13 19:04:27 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	is_dead(int time, int time_to_die, int eat_time)
+int	is_dead(t_microsec time, t_microsec time_to_die, t_microsec eat_time)
 {
 	if (time - eat_time >= time_to_die)
 		return (-1);
 	return (0);
 }
 
-int	function_in_mutex(void f(t_philo *philo, int time), t_philo *philo, const char *msg)
+int	function_in_mutex(void f(t_philo *philo, t_microsec time), t_philo *philo, const char *msg)
 {
-	t_vars	*vars;
-	int		time;
-	int		ret;
+	t_vars		*vars;
+	t_microsec	time;
+	int			ret;
 
 	ret = 0;
 	vars = philo->vars;
@@ -35,7 +35,7 @@ int	function_in_mutex(void f(t_philo *philo, int time), t_philo *philo, const ch
 	{
 		if (f)
 			f(philo, time);
-		printf("%d %d %s\n", time, philo->philo, msg);
+		printf("%llu %d %s\n", time / 1000, philo->philo, msg);
 	}
 	else
 		ret = 1;
@@ -61,7 +61,7 @@ void	*routine(void *arg)
 			return (NULL);
 		if (!x && philo->vars->philo_count % 2 == 0)
 			if (philo->philo % 2)
-				wait_time(philo, (philo->vars->time_to_eat));
+				wait_time(philo, philo->vars->time_to_eat);
 		if (x++ && philo->vars->philo_count % 2)
 			wait_time(philo, philo->vars->time_to_eat);
 		if (eat(philo))
