@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:22:54 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/11 14:43:45 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/13 15:48:59 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,10 @@ int	check_death(t_philo *philo)
 	time = calc_time(philo->vars);
 	if (time - philo->eat_time >= philo->vars->time_to_die)
 	{
-		printf("%d %d died\n", time, philo->philo);
+		if (mutex_lock_error(&philo->vars->game_mutex, 1))
+			return (-1);
+		printf("eat times: %d\neat time: %d\nlate: %d\n", philo->eat_times, philo->eat_time, time - (philo->eat_time + philo->vars->time_to_die));
+		printf("%d %d died\n", philo->eat_time + philo->vars->time_to_die, philo->philo);
 		return (1);
 	}
 	return (0);
@@ -34,23 +37,27 @@ int	monitor(t_vars *vars)
 	while (!end)
 	{
 		i = 0;
-		if (mutex_lock_error(&vars->game_mutex, 1))
-			return (-1);
 		while (i < vars->philo_count)
 		{
-			if (check_death(&vars->philos[i]) || \
+			if (mutex_lock_error(&vars->philos[i].philo_mutex, 1))
+				return (-1);
+			if (check_death(&vars->philos[i]) || 
 				vars->eaten_enough == vars->philo_count)
 			{
 				vars->game_end = 1;
 				end = 1;
+				if (mutex_lock_error(&vars->game_mutex, 2))
+					return (-1);
 				break ;
 			}
+			if (mutex_lock_error(&vars->philos[i].philo_mutex, 2))
+				return (-1);
 			i++;
 		}
-		if (mutex_lock_error(&vars->game_mutex, 2))
-			return (-1);
-		usleep(50);
+		usleep(100);
 	}
+	if (mutex_lock_error(&vars->philos[i].philo_mutex, 2))
+		return (-1);
 	return (0);
 }
 

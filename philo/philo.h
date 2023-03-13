@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:23:12 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/13 12:11:18 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/13 14:51:05 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ typedef struct s_vars
 
 typedef struct s_philo
 {
+	pthread_mutex_t	philo_mutex;
 	int			philo;
 	int			eat_time;
 	int			eat_times;

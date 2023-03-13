@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 23:08:31 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/08 23:17:33 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/13 14:54:13 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,20 @@ int	create_forks(t_vars *vars)
 	while (i < vars->philo_count)
 	{
 		if (pthread_mutex_init(&(forks[i]), NULL))
+			return (-1);
+		i++;
+	}
+	return (0);
+}
+
+int	create_philo_mutexes(t_vars *vars)
+{
+	int i;
+
+	i = 0;
+	while (i < vars->philo_count)
+	{
+		if (pthread_mutex_init(&(vars->philos[i].philo_mutex), NULL))
 			return (-1);
 		i++;
 	}
@@ -52,6 +66,7 @@ int	create_philos(t_vars *vars)
 			philos[i].left = &((vars->forks)[i - 1]);
 		i++;
 	}
+	create_philo_mutexes(vars);
 	return (0);
 }
 
@@ -64,7 +79,7 @@ int	create_threads(t_vars *vars)
 	while (i < vars->philo_count)
 	{
 		philos = vars->philos;
-		if (pthread_create(&(philos[i].thread), NULL, &routine, &philos[i]))
+		if (pthread_create(&philos[i].thread, NULL, routine, &philos[i]))
 			return (-1);
 		i++;
 	}
