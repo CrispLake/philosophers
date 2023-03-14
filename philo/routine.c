@@ -6,23 +6,23 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 10:48:09 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/13 14:13:29 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/14 17:30:36 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	is_dead(int time, int time_to_die, int eat_time)
+int	is_dead(size_t time, int time_to_die, int eat_time)
 {
-	if (time - eat_time >= time_to_die)
+	if (time - eat_time >= (size_t)time_to_die)
 		return (-1);
 	return (0);
 }
 
-int	function_in_mutex(void f(t_philo *philo, int time), t_philo *philo, const char *msg)
+int	function_in_mutex(void f(t_philo *philo, size_t time), t_philo *philo, const char *msg)
 {
 	t_vars	*vars;
-	int		time;
+	size_t	time;
 	int		ret;
 
 	ret = 0;
@@ -35,7 +35,7 @@ int	function_in_mutex(void f(t_philo *philo, int time), t_philo *philo, const ch
 	{
 		if (f)
 			f(philo, time);
-		printf("%d %d %s\n", time, philo->philo, msg);
+		printf("%lu %d %s\n", time, philo->philo, msg);
 	}
 	else
 		ret = 1;
@@ -58,16 +58,16 @@ void	*routine(void *arg)
 	while (1)
 	{
 		if (function_in_mutex(NULL, philo, "is thinking"))
-			return (NULL);
+			return ((void *)&philo->philo);
 		if (!x && philo->vars->philo_count % 2 == 0)
 			if (philo->philo % 2)
-				wait_time(philo, (philo->vars->time_to_eat));
+				wait_time(philo, philo->vars->time_to_eat - 5);
 		if (x++ && philo->vars->philo_count % 2)
-			wait_time(philo, philo->vars->time_to_eat);
+			wait_time(philo, philo->vars->time_to_eat - 5);
 		if (eat(philo))
-			return (NULL);
+			return ((void *)&philo->philo);
 		if (function_in_mutex(NULL, philo, "is sleeping"))
-			return (NULL);
+			return ((void *)&philo->philo);
 		wait_time(philo, philo->vars->time_to_sleep);
 	}
 }

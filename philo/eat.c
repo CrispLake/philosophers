@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 23:26:34 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/13 14:55:08 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/14 17:20:44 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int	grab_forks(t_philo *philo)
 	return (0);
 }
 
-void	update_eat(t_philo *philo, int time)
+void	update_eat(t_philo *philo, size_t time)
 {
 	if (mutex_lock_error(&philo->philo_mutex, 1))
 		return ;
@@ -72,7 +72,11 @@ int	eat(t_philo *philo)
 	if (grab_forks(philo))
 		return (-1);
 	if (function_in_mutex(update_eat, philo, "is eating"))
+	{
+		mutex_lock_error(philo->right, 2);
+		mutex_lock_error(philo->left, 2);
 		return (-1);
+	}
 	wait_time(philo, philo->vars->time_to_eat);
 	if (mutex_lock_error(philo->right, 2))
 		return (-1);

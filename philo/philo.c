@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:22:54 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/13 15:48:59 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/14 17:33:47 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,15 @@
 
 int	check_death(t_philo *philo)
 {
-	int	time;
+	size_t	time;
 
 	time = calc_time(philo->vars);
-	if (time - philo->eat_time >= philo->vars->time_to_die)
+	if (time - philo->eat_time >= (size_t)philo->vars->time_to_die)
 	{
 		if (mutex_lock_error(&philo->vars->game_mutex, 1))
 			return (-1);
-		printf("eat times: %d\neat time: %d\nlate: %d\n", philo->eat_times, philo->eat_time, time - (philo->eat_time + philo->vars->time_to_die));
-		printf("%d %d died\n", philo->eat_time + philo->vars->time_to_die, philo->philo);
+		printf("eat times: %d\neat time: %lu\nlate: %lu\n", philo->eat_times, philo->eat_time, time - (philo->eat_time + philo->vars->time_to_die));
+		printf("%lu %d died\n", time, philo->philo);
 		return (1);
 	}
 	return (0);
@@ -65,13 +65,14 @@ int	wait_all_threads(t_vars *vars)
 {
 	int	i;
 	int	ret;
+	int	*philo;
 
 	i = 0;
-	ret = pthread_join(vars->philos[i].thread, NULL);
-	while (!ret && i < vars->philo_count - 1)
+	ret = 0;
+	while (!ret && i < vars->philo_count)
 	{
+		ret = pthread_join(vars->philos[i].thread, (void *)&philo);
 		i++;
-		ret = pthread_join(vars->philos[i].thread, NULL);
 	}
 	if (ret)
 		return (-1);
@@ -85,7 +86,11 @@ int	destroy_mutexes(t_vars *vars)
 	i = 0;
 	pthread_mutex_destroy(&vars->game_mutex);
 	while (i < vars->philo_count)
-		pthread_mutex_destroy(&vars->forks[i++]);
+	{
+		pthread_mutex_destroy(&vars->forks[i]);
+		pthread_mutex_destroy(&vars->philos[i].philo_mutex);
+		i++;
+	}
 	free(vars->forks);
 	free(vars->philos);
 	return (0);

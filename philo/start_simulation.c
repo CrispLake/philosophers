@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 23:08:31 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/13 14:54:13 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/14 16:41:00 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,7 @@ int	create_philos(t_vars *vars)
 			philos[i].left = &((vars->forks)[i - 1]);
 		i++;
 	}
-	create_philo_mutexes(vars);
-	return (0);
+	return (create_philo_mutexes(vars));
 }
 
 int	create_threads(t_vars *vars)

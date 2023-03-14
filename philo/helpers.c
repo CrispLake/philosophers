@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/23 17:52:12 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/13 12:41:35 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/14 17:32:50 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	*p_calloc(size_t count, size_t size)
 	return ((void *)ptr);
 }
 
-int	calc_time(t_vars *vars)
+size_t	calc_time(t_vars *vars)
 {
 	size_t			time;
 	struct timeval	timeval;
@@ -65,13 +65,12 @@ int	mutex_lock_error(pthread_mutex_t *mutex, int lock)
 	return (0);
 }
 
-int	wait_time(t_philo *philo, int len)
+void	wait_time(t_philo *philo, int len)
 {
-	int	time;
+	size_t	time;
 
 	time = calc_time(philo->vars);
 	time += len;
 	while (time > calc_time(philo->vars))
-		usleep(100);
-	return (0);
+		usleep(500);
 }
