@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 19:42:52 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/13 18:09:36 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/12 18:34:36 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,9 @@ void	check_vars(t_vars *vars)
 void	init_vars(t_vars *vars, char **argv)
 {
 	vars->philo_count = check_and_atoi(argv[0]);
-	vars->time_to_die = 1000 * check_and_atoi(argv[1]);
-	vars->time_to_eat = 1000 * check_and_atoi(argv[2]);
-	vars->time_to_sleep = 1000 * check_and_atoi(argv[3]);
+	vars->time_to_die = check_and_atoi(argv[1]);
+	vars->time_to_eat = check_and_atoi(argv[2]);
+	vars->time_to_sleep = check_and_atoi(argv[3]);
 	if (argv[4])
 		vars->times_to_eat = check_and_atoi(argv[4]);
 	else
