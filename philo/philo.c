@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:22:54 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/14 17:33:47 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/15 15:48:53 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,9 @@ int	check_death(t_philo *philo)
 	time = calc_time(philo->vars);
 	if (time - philo->eat_time >= (size_t)philo->vars->time_to_die)
 	{
+		usleep(1);
 		if (mutex_lock_error(&philo->vars->game_mutex, 1))
 			return (-1);
-		printf("eat times: %d\neat time: %lu\nlate: %lu\n", philo->eat_times, philo->eat_time, time - (philo->eat_time + philo->vars->time_to_die));
 		printf("%lu %d died\n", time, philo->philo);
 		return (1);
 	}
@@ -41,8 +41,8 @@ int	monitor(t_vars *vars)
 		{
 			if (mutex_lock_error(&vars->philos[i].philo_mutex, 1))
 				return (-1);
-			if (check_death(&vars->philos[i]) || 
-				vars->eaten_enough == vars->philo_count)
+			if (vars->eaten_enough == vars->philo_count || 
+				check_death(&vars->philos[i]))
 			{
 				vars->game_end = 1;
 				end = 1;
@@ -54,7 +54,7 @@ int	monitor(t_vars *vars)
 				return (-1);
 			i++;
 		}
-		usleep(100);
+		wait_time(vars->philos, 1);
 	}
 	if (mutex_lock_error(&vars->philos[i].philo_mutex, 2))
 		return (-1);

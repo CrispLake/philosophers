@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 23:26:34 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/14 17:20:44 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/15 15:43:17 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int	grab_forks(t_philo *philo)
 	get_forks(philo, &fork1, &fork2);
 	if (mutex_lock_error(fork1, 1))
 		return (-1);
-	if (function_in_mutex(NULL, philo, "has taken a fork"))
+	if (print_state(philo, "has taken a fork"))
 	{
 		mutex_lock_error(fork1, 2);
 		return (-1);
@@ -46,7 +46,7 @@ int	grab_forks(t_philo *philo)
 	}
 	if (mutex_lock_error(fork2, 1))
 		return (-1);
-	if (function_in_mutex(NULL, philo, "has taken a fork"))
+	if (print_state(philo, "has taken a fork"))
 	{
 		mutex_lock_error(fork1, 2);
 		mutex_lock_error(fork2, 2);
@@ -59,24 +59,25 @@ void	update_eat(t_philo *philo, size_t time)
 {
 	if (mutex_lock_error(&philo->philo_mutex, 1))
 		return ;
-	philo->eat_times++;
 	philo->eat_time = time;
-	if (philo->eat_times == philo->vars->times_to_eat)
-		philo->vars->eaten_enough++;
 	if (mutex_lock_error(&philo->philo_mutex, 2))
 		return ;
+	philo->eat_times++;
+	if (philo->eat_times == philo->vars->times_to_eat)
+		philo->vars->eaten_enough++;
 }
 
 int	eat(t_philo *philo)
 {
 	if (grab_forks(philo))
 		return (-1);
-	if (function_in_mutex(update_eat, philo, "is eating"))
+	if (print_state(philo, "is eating"))
 	{
 		mutex_lock_error(philo->right, 2);
 		mutex_lock_error(philo->left, 2);
 		return (-1);
 	}
+	update_eat(philo, calc_time(philo->vars));
 	wait_time(philo, philo->vars->time_to_eat);
 	if (mutex_lock_error(philo->right, 2))
 		return (-1);
