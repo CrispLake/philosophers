@@ -6,14 +6,13 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:23:12 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/15 14:21:51 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/15 16:19:52 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
 
-#include <stddef.h>
 # include <sys/time.h>
 # include <stdio.h>
 # include <unistd.h>

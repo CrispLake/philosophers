@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 10:48:09 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/15 15:47:27 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/15 17:00:11 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	*routine_for_odds(t_philo *philo)
 	{
 		if (print_state(philo, "is thinking"))
 			return ((void *)&philo->philo);
-		if (x++ && philo->vars->philo_count % 2)
+		if (x++)
 			wait_time(philo, philo->vars->time_to_eat - 5);
 		if (eat(philo))
 			return ((void *)&philo->philo);
@@ -80,9 +80,8 @@ void	*routine(void *arg)
 	{
 		if (print_state(philo, "is thinking"))
 			return ((void *)&philo->philo);
-		if (!x++ && philo->vars->philo_count % 2 == 0)
-			if (philo->philo % 2)
-				wait_time(philo, philo->vars->time_to_eat - 5);
+		if (!x++ && philo->philo % 2)
+			wait_time(philo, philo->vars->time_to_eat - 5);
 		if (eat(philo))
 			return ((void *)&philo->philo);
 		if (print_state(philo, "is sleeping"))

@@ -6,25 +6,30 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:22:54 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/15 15:48:53 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/15 17:19:22 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+#include <pthread.h>
 
 int	check_death(t_philo *philo)
 {
 	size_t	time;
 
+	if (mutex_lock_error(&philo->vars->game_mutex, 1))
+		return (-1);
 	time = calc_time(philo->vars);
 	if (time - philo->eat_time >= (size_t)philo->vars->time_to_die)
 	{
-		usleep(1);
-		if (mutex_lock_error(&philo->vars->game_mutex, 1))
-			return (-1);
 		printf("%lu %d died\n", time, philo->philo);
+		philo->vars->game_end = 1;
+		if (mutex_lock_error(&philo->vars->game_mutex, 2))
+			return (-1);
 		return (1);
 	}
+	if (mutex_lock_error(&philo->vars->game_mutex, 2))
+		return (-1);
 	return (0);
 }
 
@@ -44,17 +49,14 @@ int	monitor(t_vars *vars)
 			if (vars->eaten_enough == vars->philo_count || 
 				check_death(&vars->philos[i]))
 			{
-				vars->game_end = 1;
 				end = 1;
-				if (mutex_lock_error(&vars->game_mutex, 2))
-					return (-1);
 				break ;
 			}
 			if (mutex_lock_error(&vars->philos[i].philo_mutex, 2))
 				return (-1);
 			i++;
 		}
-		wait_time(vars->philos, 1);
+		wait_time(vars->philos, 5);
 	}
 	if (mutex_lock_error(&vars->philos[i].philo_mutex, 2))
 		return (-1);
