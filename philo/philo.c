@@ -6,12 +6,11 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:22:54 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/15 17:19:22 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/15 17:54:30 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-#include <pthread.h>
 
 int	check_death(t_philo *philo)
 {
