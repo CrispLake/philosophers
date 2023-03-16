@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 10:48:09 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/15 17:00:11 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/16 13:31:30 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,12 +80,13 @@ void	*routine(void *arg)
 	{
 		if (print_state(philo, "is thinking"))
 			return ((void *)&philo->philo);
-		if (!x++ && philo->philo % 2)
+		if (!x && philo->philo % 2)
 			wait_time(philo, philo->vars->time_to_eat - 5);
 		if (eat(philo))
 			return ((void *)&philo->philo);
 		if (print_state(philo, "is sleeping"))
 			return ((void *)&philo->philo);
 		wait_time(philo, philo->vars->time_to_sleep);
+		x++;
 	}
 }
