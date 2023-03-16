@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/03/11 14:40:50 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/12 18:27:25 by emajuri          ###   ########.fr       */
+/*   Created: 2023/03/15 17:53:36 by emajuri           #+#    #+#             */
+/*   Updated: 2023/03/16 13:49:37 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	*p_calloc(size_t count, size_t size)
 	return ((void *)ptr);
 }
 
-int	calc_time(t_vars *vars)
+size_t	calc_time(t_vars *vars)
 {
 	size_t			time;
 	struct timeval	timeval;
@@ -44,34 +44,12 @@ int	calc_time(t_vars *vars)
 	return (time - vars->start_time);
 }
 
-int	mutex_lock_error(pthread_mutex_t *mutex, int lock)
+void	wait_time(t_philo *philo, int len)
 {
-	if (lock == 1)
-	{
-		if (pthread_mutex_lock(mutex))
-		{
-			printf("Error locking mutex\n");
-			return (-1);
-		}
-	}
-	else
-	{
-		if (pthread_mutex_unlock(mutex))
-		{
-			printf("Error unlocking mutex\n");
-			return (-1);
-		}
-	}
-	return (0);
-}
-
-int	wait_time(t_philo *philo, int len)
-{
-	int	time;
+	size_t	time;
 
 	time = calc_time(philo->vars);
 	time += len;
 	while (time > calc_time(philo->vars))
-		usleep(50);
-	return (0);
+		usleep(500);
 }

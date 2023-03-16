@@ -5,31 +5,13 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/03/11 14:41:22 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/11 14:41:24 by emajuri          ###   ########.fr       */
+/*   Created: 2023/03/08 23:08:31 by emajuri           #+#    #+#             */
+/*   Updated: 2023/03/16 21:15:49 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
-
-int	create_forks(t_vars *vars)
-{
-	t_fork	*forks;
-	int		i;
-
-	i = 0;
-	vars->forks = p_calloc(sizeof(t_fork), vars->philo_count);
-	if (!vars->forks)
-		return (-1);
-	forks = vars->forks;
-	while (i < vars->philo_count)
-	{
-		if (pthread_mutex_init(&(forks[i]), NULL))
-			return (-1);
-		i++;
-	}
-	return (0);
-}
+#include <sys/semaphore.h>
 
 int	create_philos(t_vars *vars)
 {
@@ -45,46 +27,106 @@ int	create_philos(t_vars *vars)
 	{
 		philos[i].philo = i + 1;
 		philos[i].vars = vars;
-		philos[i].right = &((vars->forks)[i]);
-		if (i == 0)
-			philos[i].left = &((vars->forks)[vars->philo_count - 1]);
-		else
-			philos[i].left = &((vars->forks)[i - 1]);
 		i++;
 	}
 	return (0);
 }
 
-int	create_threads(t_vars *vars)
+int	create_semaphores(t_vars *vars)
 {
-	t_philo	*philos;
-	int		i;
-
-	i = 0;
-	while (i < vars->philo_count)
+	vars->game_sem = sem_open("game_sem", O_CREAT, 0644, 0);
+	if (vars->game_sem == SEM_FAILED)
 	{
-		philos = vars->philos;
-		if (pthread_create(&(philos[i].thread), NULL, &routine, &philos[i]))
-			return (-1);
-		i++;
+		printf("Error creating game_sem\n");
+		return (-1);
+	}
+	vars->forks_sem = sem_open("forks_sem", O_CREAT, 0644, vars->philo_count);
+	if (vars->forks_sem == SEM_FAILED)
+	{
+		sem_close(vars->game_sem);
+		sem_unlink("game_sem");
+		printf("Error creating forks_sem\n");
+		return (-1);
 	}
 	return (0);
+}
+
+int	create_processes(t_vars *vars)
+{
+	int	i;
+
+	i = 0;
+	(void)vars;
+	return (0);
+}
+
+void	child(t_philo *philo)
+{
+	int i = 0;
+	printf("Hello\n");
+	sem_open("game_sem", 0);
+	sem_open("forks_sem", 0);
+	sem_wait(philo->vars->game_sem);
+	sem_post(philo->vars->game_sem);
+	while (i < 10)
+	{
+		printf("philo %d: Heyyy\n", philo->philo);
+		usleep(10 * 1000 * 1000);
+		i++;
+	}
+	sem_close(philo->vars->forks_sem);
+	sem_close(philo->vars->game_sem);
+	printf("%d left\n", philo->philo);
+	exit(0);
+}
+
+void	delete_this(t_vars *vars)
+{
+	int i = 0;
+	int	pid;
+
+	while (i < vars->philo_count)
+	{
+		pid = fork();
+		printf("pid: %d\n", pid);
+		if (!pid)
+			child(&vars->philos[i]);
+		printf("Created %d\n", i + 1);
+		i++;
+	}
+	usleep(5 * 1000 * 1000);
+	printf("Starting\n");
+	sem_post(vars->game_sem);
+	i = 0;
+	while (i < 10)
+	{
+		printf("parent: %d\n", i);
+		usleep(10 * 1000 * 1000);
+		i++;
+	}
+	sem_close(vars->game_sem);
+	sem_close(vars->forks_sem);
+	sem_unlink("game_sem");
+	sem_unlink("forks_sem");
+	printf("leaving\n");
+	exit (-1);
 }
 
 int	start_sim(t_vars *vars)
 {
-	if (pthread_mutex_init(&(vars->game_mutex), NULL))
-		return (-1);
-	if (create_forks(vars))
-		return (-1);
 	if (create_philos(vars))
 		return (-1);
-	if (mutex_lock_error(&(vars->game_mutex), 1))
+	if	(create_semaphores(vars))
 		return (-1);
-	if (create_threads(vars))
+	delete_this(vars);
+	if (create_processes(vars))
 		return (-1);
+	// if (mutex_lock_error(&(vars->game_mutex), 1))
+	// 	return (-1);
+	// if (create_threads(vars))
+	// 	return (-1);
 	calc_time(vars);
-	if (mutex_lock_error(&(vars->game_mutex), 2))
-		return (-1);
+	// if (mutex_lock_error(&(vars->game_mutex), 2))
+	// 	return (-1);
 	return (0);
 }

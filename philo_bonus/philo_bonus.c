@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/03/11 14:40:55 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/11 14:40:56 by emajuri          ###   ########.fr       */
+/*   Created: 2023/03/15 17:54:15 by emajuri           #+#    #+#             */
+/*   Updated: 2023/03/16 18:03:24 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,21 @@
 
 int	check_death(t_philo *philo)
 {
-	int	time;
+	size_t	time;
 
+	// if (mutex_lock_error(&philo->vars->game_mutex, 1))
+	// 	return (-1);
 	time = calc_time(philo->vars);
-	if (time - philo->eat_time >= philo->vars->time_to_die)
+	if (time - philo->eat_time >= (size_t)philo->vars->time_to_die)
 	{
-		printf("%d %d died\n", time, philo->philo);
+		printf("%lu %d died\n", time, philo->philo);
+		philo->vars->game_end = 1;
+		// if (mutex_lock_error(&philo->vars->game_mutex, 2))
+		// 	return (-1);
 		return (1);
 	}
+	// if (mutex_lock_error(&philo->vars->game_mutex, 2))
+	// 	return (-1);
 	return (0);
 }
 
@@ -34,53 +41,47 @@ int	monitor(t_vars *vars)
 	while (!end)
 	{
 		i = 0;
-		if (mutex_lock_error(&vars->game_mutex, 1))
-			return (-1);
 		while (i < vars->philo_count)
 		{
-			if (check_death(&vars->philos[i]) || \
-				vars->eaten_enough == vars->philo_count)
+			// if (mutex_lock_error(&vars->philos[i].philo_mutex, 1))
+			// 	return (-1);
+			if (vars->eaten_enough == vars->philo_count || 
+				check_death(&vars->philos[i]))
 			{
-				vars->game_end = 1;
 				end = 1;
 				break ;
 			}
+			// if (mutex_lock_error(&vars->philos[i].philo_mutex, 2))
+			// 	return (-1);
 			i++;
 		}
-		if (mutex_lock_error(&vars->game_mutex, 2))
-			return (-1);
-		usleep(50);
+		wait_time(vars->philos, 5);
 	}
+	// if (mutex_lock_error(&vars->philos[i].philo_mutex, 2))
+	// 	return (-1);
 	return (0);
 }
 
-int	wait_all_threads(t_vars *vars)
+int	destroy_sems(t_vars *vars)
 {
-	int	i;
-	int	ret;
-
-	i = 0;
-	ret = pthread_join(vars->philos[i].thread, NULL);
-	while (!ret && i < vars->philo_count - 1)
-	{
-		i++;
-		ret = pthread_join(vars->philos[i].thread, NULL);
-	}
-	if (ret)
-		return (-1);
+	sem_close(vars->game_sem);
+	sem_close(vars->forks_sem);
+	sem_unlink("game_sem");
+	sem_unlink("forks_sem");
 	return (0);
 }
 
-int	destroy_mutexes(t_vars *vars)
+int	kill_children(t_vars *vars)
 {
 	int	i;
-
+	
 	i = 0;
-	pthread_mutex_destroy(&vars->game_mutex);
 	while (i < vars->philo_count)
-		pthread_mutex_destroy(&vars->forks[i++]);
-	free(vars->forks);
-	free(vars->philos);
+	{
+		kill(vars->philos[i].pid, SIGKILL);
+		i++;
+	}
+	destroy_sems(vars);
 	return (0);
 }
 
@@ -98,10 +99,8 @@ int	main(int argc, char **argv)
 	if (vars.philo_count == -1 || vars.times_to_eat == 0)
 		return (-1);
 	if (start_sim(&vars))
-		return (destroy_mutexes(&vars));
+		return (kill_children(&vars));
 	if (monitor(&vars))
-		return (destroy_mutexes(&vars));
-	if (wait_all_threads(&vars))
-		return (destroy_mutexes(&vars));
-	return (destroy_mutexes(&vars));
+		return (kill_children(&vars));
+	return (kill_children(&vars));
 }

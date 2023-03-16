@@ -5,8 +5,8 @@
 #                                                     +:+ +:+         +:+      #
 #    By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/03/12 19:07:49 by emajuri           #+#    #+#              #
-#    Updated: 2023/03/12 19:07:51 by emajuri          ###   ########.fr        #
+#    Created: 2023/03/12 19:08:23 by emajuri           #+#    #+#              #
+#    Updated: 2023/03/16 14:31:49 by emajuri          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,13 +17,13 @@ BSRC = $(BONUS_NAME).c argument_conversion_bonus.c check_and_atoi_bonus.c \
 
 BOSRC = $(BSRC:%.c=%.o)
 
-WWW = -Wall -Wextra -Werror
+WWW = -Wall -Wextra -Werror -g
 
 .PHONY: all clean fclean re
 
-all: $(NAME)
+all: $(BONUS_NAME)
 
-$(NAME): $(BOSRC)
+$(BONUS_NAME): $(BOSRC)
 	cc $(WWW) $(BOSRC) -o $(BONUS_NAME)
 
 clean:
