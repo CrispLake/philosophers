@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:23:12 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/16 21:15:59 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/17 15:11:45 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <stdlib.h>
 # include <semaphore.h>
 # include <signal.h>
+# include <pthread.h>
 
 typedef struct s_philo	t_philo;
 
@@ -31,9 +32,9 @@ typedef struct s_vars
 	int		time_to_eat;
 	int		times_to_eat;
 	int		time_to_sleep;
-	int		eaten_enough;
 	size_t	start_time;
 	int		game_end;
+	sem_t	*eat_sem;
 	sem_t	*game_sem;
 	sem_t	*forks_sem;
 }	t_vars;

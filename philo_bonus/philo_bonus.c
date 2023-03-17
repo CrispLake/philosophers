@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/15 17:54:15 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/16 18:03:24 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/17 22:38:02 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,62 +32,63 @@ int	check_death(t_philo *philo)
 	return (0);
 }
 
-int	monitor(t_vars *vars)
+void	destroy_sems(t_vars *vars)
 {
-	int	i;
-	int	end;
-
-	end = 0;
-	while (!end)
+	if (vars->game_sem)
 	{
-		i = 0;
-		while (i < vars->philo_count)
-		{
-			// if (mutex_lock_error(&vars->philos[i].philo_mutex, 1))
-			// 	return (-1);
-			if (vars->eaten_enough == vars->philo_count || 
-				check_death(&vars->philos[i]))
-			{
-				end = 1;
-				break ;
-			}
-			// if (mutex_lock_error(&vars->philos[i].philo_mutex, 2))
-			// 	return (-1);
-			i++;
-		}
-		wait_time(vars->philos, 5);
+		sem_close(vars->game_sem);
+		sem_unlink("game_sem");
 	}
-	// if (mutex_lock_error(&vars->philos[i].philo_mutex, 2))
-	// 	return (-1);
-	return (0);
+	if (vars->forks_sem)
+	{
+		sem_close(vars->forks_sem);
+		sem_unlink("forks_sem");
+	}
+	if (vars->forks_sem)
+	{
+		sem_close(vars->eat_sem);
+		sem_unlink("eat_sem");
+	}
 }
 
-int	destroy_sems(t_vars *vars)
-{
-	sem_close(vars->game_sem);
-	sem_close(vars->forks_sem);
-	sem_unlink("game_sem");
-	sem_unlink("forks_sem");
-	return (0);
-}
-
-int	kill_children(t_vars *vars)
+int	kill_children(t_vars *vars, int dead)
 {
 	int	i;
 	
 	i = 0;
 	while (i < vars->philo_count)
 	{
+		if (vars->philos[i].pid == dead)
+			i++;
+		if (!vars->philos[i].pid)
+			break ;
 		kill(vars->philos[i].pid, SIGKILL);
+		i++;
+	}
+	i = 0;
+	while (i < vars->philo_count)
+	{
+		if (vars->philos[i].pid == dead)
+			i++;
+		if (!vars->philos[i].pid)
+			break ;
+		waitpid(vars->philos[i].pid, NULL, 0);
 		i++;
 	}
 	destroy_sems(vars);
 	return (0);
 }
 
+int	monitor(t_vars *vars, int *dead)
+{
+
+	return (0);
+}
+
 int	main(int argc, char **argv)
 {
 	t_vars	vars;
+	int		dead;
 
 	if (argc != 5 && argc != 6)
 	{
@@ -99,8 +100,8 @@ int	main(int argc, char **argv)
 	if (vars.philo_count == -1 || vars.times_to_eat == 0)
 		return (-1);
 	if (start_sim(&vars))
-		return (kill_children(&vars));
-	if (monitor(&vars))
-		return (kill_children(&vars));
-	return (kill_children(&vars));
+		return (kill_children(&vars, 0));
+	if (monitor(&vars, &dead))
+		return (kill_children(&vars, dead));
+	return (kill_children(&vars, dead));
 }
