@@ -6,31 +6,13 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/15 17:54:15 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/17 22:38:02 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/27 13:11:49 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
-
-int	check_death(t_philo *philo)
-{
-	size_t	time;
-
-	// if (mutex_lock_error(&philo->vars->game_mutex, 1))
-	// 	return (-1);
-	time = calc_time(philo->vars);
-	if (time - philo->eat_time >= (size_t)philo->vars->time_to_die)
-	{
-		printf("%lu %d died\n", time, philo->philo);
-		philo->vars->game_end = 1;
-		// if (mutex_lock_error(&philo->vars->game_mutex, 2))
-		// 	return (-1);
-		return (1);
-	}
-	// if (mutex_lock_error(&philo->vars->game_mutex, 2))
-	// 	return (-1);
-	return (0);
-}
+#include <sys/semaphore.h>
+#include <sys/wait.h>
 
 void	destroy_sems(t_vars *vars)
 {
@@ -44,7 +26,7 @@ void	destroy_sems(t_vars *vars)
 		sem_close(vars->forks_sem);
 		sem_unlink("forks_sem");
 	}
-	if (vars->forks_sem)
+	if (vars->eat_sem)
 	{
 		sem_close(vars->eat_sem);
 		sem_unlink("eat_sem");
@@ -58,7 +40,7 @@ int	kill_children(t_vars *vars, int dead)
 	i = 0;
 	while (i < vars->philo_count)
 	{
-		if (vars->philos[i].pid == dead)
+		if (vars->philos[i].philo == dead)
 			i++;
 		if (!vars->philos[i].pid)
 			break ;
@@ -68,7 +50,7 @@ int	kill_children(t_vars *vars, int dead)
 	i = 0;
 	while (i < vars->philo_count)
 	{
-		if (vars->philos[i].pid == dead)
+		if (vars->philos[i].philo == dead)
 			i++;
 		if (!vars->philos[i].pid)
 			break ;
@@ -79,9 +61,85 @@ int	kill_children(t_vars *vars, int dead)
 	return (0);
 }
 
-int	monitor(t_vars *vars, int *dead)
+void	*death(void *arg)
 {
+	t_vars	*vars;
+	int		i;
+	int		status;
 
+	vars = (t_vars *)arg;
+	status = 0;
+	while (1)
+	{
+		i = 0;
+		while (i < vars->philo_count)
+		{
+			sem_wait(vars->monitor_sem);
+			if (vars->monitor)
+			{
+				sem_post(vars->monitor_sem);
+				return (NULL);
+			}
+			waitpid(vars->philos[i].pid, &status, WNOHANG);
+			if (status > 0)
+			{
+				sem_wait(vars->game_sem);
+				printf("%lu %d died\n", calc_time(vars), status);
+				vars->monitor = status;
+			}
+			sem_post(vars->monitor_sem);
+			i++;
+		}
+	}
+	return (NULL);
+}
+
+void	*eat_count(void *arg)
+{
+	t_vars	*vars;
+	int		i;
+
+	vars = (t_vars *)arg;
+	i = 0;
+	while (i < vars->philo_count)
+	{
+		sem_wait(vars->monitor_sem);
+		if (vars->monitor)
+			return (NULL);
+		sem_post(vars->monitor_sem);
+		sem_wait(vars->eat_sem);
+		i++;
+	}
+	sem_wait(vars->monitor_sem);
+	if (!vars->monitor)
+		vars->monitor = -1;
+	sem_post(vars->monitor_sem);
+	return (NULL);
+}
+
+static int	monitor(t_vars *vars)
+{
+	pthread_t	monitors[2];
+
+	vars->monitor_sem = sem_open("monitor_sem", O_CREAT, 0644, 1);
+	sem_unlink("monitor_sem");
+	if (vars->monitor_sem == SEM_FAILED)
+	{
+		printf("Error creating monitor_sem\n");
+		return (-1);
+	}
+	if (pthread_create(&monitors[DEATH], NULL, death, vars))
+	{
+		sem_close(vars->monitor_sem);
+		return (-1);
+	}
+	if (pthread_create(&monitors[EAT], NULL, eat_count, vars))
+	{
+		sem_close(vars->monitor_sem);
+		return (-1);
+	}
+	pthread_join(monitors[DEATH], NULL);
+	pthread_join(monitors[EAT], NULL);
 	return (0);
 }
 
@@ -101,7 +159,7 @@ int	main(int argc, char **argv)
 		return (-1);
 	if (start_sim(&vars))
 		return (kill_children(&vars, 0));
-	if (monitor(&vars, &dead))
-		return (kill_children(&vars, dead));
-	return (kill_children(&vars, dead));
+	if (monitor(&vars))
+		return (kill_children(&vars, vars.monitor));
+	return (kill_children(&vars, vars.monitor));
 }

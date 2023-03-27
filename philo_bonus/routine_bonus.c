@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/15 17:56:24 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/16 14:24:58 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/27 15:04:45 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,16 +27,14 @@ int	print_state(t_philo *philo, const char *msg)
 
 	ret = 0;
 	vars = philo->vars;
-	// if (mutex_lock_error(&philo->vars->game_mutex, 1))
-	// 	return (-1);
+	sem_wait(philo->vars->game_sem);
 	time = calc_time(philo->vars);
 	if (!is_dead(time, philo->vars->time_to_die, philo->eat_time) && 
-		vars->game_end != 1 && vars->eaten_enough != vars->philo_count)
+		vars->game_end != 1)
 		printf("%lu %d %s\n", time, philo->philo, msg);
 	else
 		ret = 1;
-	// if (mutex_lock_error(&philo->vars->game_mutex, 2))
-	// 	return (-1);
+	sem_post(philo->vars->game_sem);
 	return (ret);
 }
 
@@ -45,10 +43,10 @@ void	*routine_for_odds(t_philo *philo)
 	int		x;
 
 	x = 0;
-	// if (mutex_lock_error(&philo->vars->game_mutex, 1))
-	// 	return (NULL);
-	// if (mutex_lock_error(&philo->vars->game_mutex, 2))
-	// 	return (NULL);
+	sem_wait(philo->vars->game_sem);
+	sem_post(philo->vars->game_sem);
+	calc_time(philo->vars);
+	sem_post(philo->vars->monitor_sem);
 	while (1)
 	{
 		if (print_state(philo, "is thinking"))
@@ -72,10 +70,10 @@ void	*routine(void *arg)
 	philo = (t_philo *)arg;
 	if (philo->vars->philo_count % 2)
 		return (routine_for_odds(philo));
-	// if (mutex_lock_error(&philo->vars->game_mutex, 1))
-	// 	return (NULL);
-	// if (mutex_lock_error(&philo->vars->game_mutex, 2))
-	// 	return (NULL);
+	sem_wait(philo->vars->game_sem);
+	sem_post(philo->vars->game_sem);
+	calc_time(philo->vars);
+	sem_post(philo->vars->monitor_sem);
 	while (1)
 	{
 		if (print_state(philo, "is thinking"))

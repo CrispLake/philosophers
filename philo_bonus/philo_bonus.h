@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:23:12 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/17 15:11:45 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/27 13:13:52 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ typedef struct s_vars
 	sem_t	*eat_sem;
 	sem_t	*game_sem;
 	sem_t	*forks_sem;
+	sem_t	*monitor_sem;
+	int		monitor;
 }	t_vars;
 
 typedef struct s_philo
@@ -48,6 +50,12 @@ typedef struct s_philo
 	t_vars	*vars;
 }	t_philo;
 
+enum e_monitors
+{
+	DEATH = 0,
+	EAT = 1
+};
+
 void	init_vars(t_vars *vars, char **argv);
 int		check_and_atoi(char *nb);
 void	*p_calloc(size_t count, size_t size);
@@ -57,5 +65,6 @@ void	wait_time(t_philo *philo, int len);
 int		start_sim(t_vars *vars);
 int		print_state(t_philo *philo, const char *msg);
 int		eat(t_philo *philo);
+void	child(t_philo *philo);
 
 #endif
