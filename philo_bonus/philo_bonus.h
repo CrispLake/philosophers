@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:23:12 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/27 13:13:52 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/28 11:55:28 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,9 @@ void	*routine(void *philo);
 void	wait_time(t_philo *philo, int len);
 int		start_sim(t_vars *vars);
 int		print_state(t_philo *philo, const char *msg);
-int		eat(t_philo *philo);
 void	child(t_philo *philo);
+size_t	p_strlen(const char *s);
+char	*p_strjoin(char const *s1, char const *s2);
+char	*p_itoa(int n);
 
 #endif

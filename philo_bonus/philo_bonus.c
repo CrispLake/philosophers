@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/15 17:54:15 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/27 13:11:49 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/28 11:59:40 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void	destroy_sems(t_vars *vars)
 int	kill_children(t_vars *vars, int dead)
 {
 	int	i;
-	
+
 	i = 0;
 	while (i < vars->philo_count)
 	{
@@ -86,6 +86,8 @@ void	*death(void *arg)
 				sem_wait(vars->game_sem);
 				printf("%lu %d died\n", calc_time(vars), status);
 				vars->monitor = status;
+				sem_post(vars->monitor_sem);
+				return (NULL);
 			}
 			sem_post(vars->monitor_sem);
 			i++;
@@ -146,7 +148,6 @@ static int	monitor(t_vars *vars)
 int	main(int argc, char **argv)
 {
 	t_vars	vars;
-	int		dead;
 
 	if (argc != 5 && argc != 6)
 	{

@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 23:08:31 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/27 14:57:24 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/28 11:59:56 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,6 @@ int	create_semaphores(t_vars *vars)
 int	create_processes(t_vars *vars)
 {
 	int	i;
-	int	pid;
 
 	i = 0;
 	while (i < vars->philo_count)
@@ -76,7 +75,7 @@ int	start_sim(t_vars *vars)
 {
 	if (create_philos(vars))
 		return (-1);
-	if	(create_semaphores(vars))
+	if (create_semaphores(vars))
 		return (-1);
 	if (create_processes(vars))
 		return (-1);
