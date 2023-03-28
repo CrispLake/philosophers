@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/27 13:06:36 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/28 12:03:41 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/28 16:27:43 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,11 @@ int	check_death(t_philo *philo)
 
 	time = calc_time(philo->vars);
 	if (time - philo->eat_time >= (size_t)philo->vars->time_to_die)
+	{
+		sem_wait(philo->vars->game_sem);
+		printf("%lu %d died\n", calc_time(philo->vars), philo->philo);
 		return (1);
+	}
 	return (0);
 }
 
@@ -35,7 +39,7 @@ int	*monitoring(t_philo *philo)
 	return (NULL);
 }
 
-int	create_monitor_sem(int philo, sem_t *monitor_sem)
+int	create_monitor_sem(int philo, t_vars *vars)
 {
 	char	*id;
 	char	*monitor;
@@ -43,14 +47,14 @@ int	create_monitor_sem(int philo, sem_t *monitor_sem)
 	id = p_itoa(philo);
 	monitor = p_strjoin("monitor_sem", id);
 	free(id);
-	monitor_sem = sem_open(monitor, O_CREAT, 0644, 0);
-	if (monitor_sem == SEM_FAILED)
+	vars->monitor_sem = sem_open(monitor, O_CREAT | O_EXCL, 0644, 0);
+	sem_unlink(monitor);
+	if (vars->monitor_sem == SEM_FAILED)
 	{
 		printf("Error creating %s\n", monitor);
 		free(monitor);
 		return (-1);
 	}
-	sem_unlink(monitor);
 	free(monitor);
 	return (0);
 }
@@ -63,41 +67,15 @@ void	exit_error(t_philo *philo)
 	exit(-1);
 }
 
-void	open_sems(t_vars *vars)
-{
-	vars->game_sem = sem_open("game_sem", 0);
-	if (vars->game_sem == SEM_FAILED)
-	{
-		printf("Error opening game_sem\n");
-		exit(-1);
-	}
-	vars->game_sem = sem_open("forks_sem", 0);
-	if (vars->forks_sem == SEM_FAILED)
-	{
-		printf("Error opening forks_sem\n");
-		sem_close(vars->forks_sem);
-		exit(-1);
-	}
-	vars->game_sem = sem_open("eat_sem", 0);
-	if (vars->eat_sem == SEM_FAILED)
-	{
-		printf("Error opening eat_sem\n");
-		sem_close(vars->forks_sem);
-		sem_close(vars->eat_sem);
-		exit(-1);
-	}
-}
-
 void	child(t_philo *philo)
 {
 	pthread_t	thread;
 	sem_t		*monitor_sem;
 
 	monitor_sem = NULL;
-	open_sems(philo->vars);
-	if (pthread_create(&thread, NULL, routine, philo))
+	if (create_monitor_sem(philo->philo, philo->vars))
 		exit_error(philo);
-	if (create_monitor_sem(philo->philo, monitor_sem))
+	if (pthread_create(&thread, NULL, routine, philo))
 		exit_error(philo);
 	monitoring(philo);
 	sem_close(philo->vars->game_sem);

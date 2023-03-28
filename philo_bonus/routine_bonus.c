@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/15 17:56:24 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/28 12:12:47 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/28 16:50:00 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,14 +88,10 @@ void	*routine(void *arg)
 	philo = (t_philo *)arg;
 	if (philo->vars->philo_count % 2)
 		return (routine_for_odds(philo));
-	printf("philo %d\n", philo->philo);
-	if (sem_wait(philo->vars->game_sem))
-		printf("Error in sem_wait game_sem\n");
-	if (sem_post(philo->vars->game_sem))
-		printf("Error in sem_post game_sem\n");
+	sem_wait(philo->vars->game_sem);
+	sem_post(philo->vars->game_sem);
 	calc_time(philo->vars);
-	if (sem_post(philo->vars->monitor_sem))
-		printf("Error in sem_post monitor_sem\n");
+	sem_post(philo->vars->monitor_sem);
 	while (1)
 	{
 		if (print_state(philo, "is thinking"))

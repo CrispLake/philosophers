@@ -6,7 +6,7 @@
 #    By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/12 19:08:23 by emajuri           #+#    #+#              #
-#    Updated: 2023/03/28 12:02:21 by emajuri          ###   ########.fr        #
+#    Updated: 2023/03/28 12:20:35 by emajuri          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ BSRC = $(BONUS_NAME).c argument_conversion_bonus.c check_and_atoi_bonus.c \
 
 BOSRC = $(BSRC:%.c=%.o)
 
-WWW = -Wall -Wextra -Werror -g
+WWW = -Wall -Wextra -Werror
 
 .PHONY: all clean fclean re
 

@@ -6,31 +6,20 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/15 17:54:15 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/28 11:59:40 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/28 16:49:23 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
-#include <sys/semaphore.h>
-#include <sys/wait.h>
 
 void	destroy_sems(t_vars *vars)
 {
 	if (vars->game_sem)
-	{
 		sem_close(vars->game_sem);
-		sem_unlink("game_sem");
-	}
 	if (vars->forks_sem)
-	{
 		sem_close(vars->forks_sem);
-		sem_unlink("forks_sem");
-	}
 	if (vars->eat_sem)
-	{
 		sem_close(vars->eat_sem);
-		sem_unlink("eat_sem");
-	}
 }
 
 int	kill_children(t_vars *vars, int dead)
@@ -61,6 +50,16 @@ int	kill_children(t_vars *vars, int dead)
 	return (0);
 }
 
+void	*end_after_death(t_vars *vars, int status)
+{
+	if (status == -1)
+		printf("Error in child process\n");
+	vars->monitor = status;
+	sem_post(vars->monitor_sem);
+	sem_post(vars->eat_sem);
+	return (NULL);
+}
+
 void	*death(void *arg)
 {
 	t_vars	*vars;
@@ -76,22 +75,14 @@ void	*death(void *arg)
 		{
 			sem_wait(vars->monitor_sem);
 			if (vars->monitor)
-			{
-				sem_post(vars->monitor_sem);
 				return (NULL);
-			}
 			waitpid(vars->philos[i].pid, &status, WNOHANG);
-			if (status > 0)
-			{
-				sem_wait(vars->game_sem);
-				printf("%lu %d died\n", calc_time(vars), status);
-				vars->monitor = status;
-				sem_post(vars->monitor_sem);
-				return (NULL);
-			}
+			if (status != 0)
+				return (end_after_death(vars, status));
 			sem_post(vars->monitor_sem);
 			i++;
 		}
+		wait_time(&vars->philos[0], 4);
 	}
 	return (NULL);
 }
