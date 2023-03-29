@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 23:08:31 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/28 16:29:17 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/29 14:35:44 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ int	start_sim(t_vars *vars)
 		return (-1);
 	if (create_processes(vars))
 		return (-1);
-	wait_time(&vars->philos[0], 100);
+	wait_time(vars->philos, 100);
 	calc_time(vars);
 	sem_post(vars->game_sem);
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:23:12 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/28 11:55:28 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/29 13:18:26 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ typedef struct s_vars
 	int		times_to_eat;
 	int		time_to_sleep;
 	size_t	start_time;
-	int		game_end;
 	sem_t	*eat_sem;
 	sem_t	*game_sem;
 	sem_t	*forks_sem;
@@ -68,5 +67,6 @@ void	child(t_philo *philo);
 size_t	p_strlen(const char *s);
 char	*p_strjoin(char const *s1, char const *s2);
 char	*p_itoa(int n);
+int		monitor(t_vars *vars);
 
 #endif

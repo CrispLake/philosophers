@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/27 13:06:36 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/28 16:27:43 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/29 14:40:19 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	*monitoring(t_philo *philo)
 	{
 		sem_wait(philo->vars->monitor_sem);
 		if (check_death(philo))
-			break ;
+			return (NULL);
 		sem_post(philo->vars->monitor_sem);
 		wait_time(philo, 5);
 	}
@@ -59,27 +59,15 @@ int	create_monitor_sem(int philo, t_vars *vars)
 	return (0);
 }
 
-void	exit_error(t_philo *philo)
-{
-	sem_close(philo->vars->game_sem);
-	sem_close(philo->vars->forks_sem);
-	sem_close(philo->vars->eat_sem);
-	exit(-1);
-}
-
 void	child(t_philo *philo)
 {
 	pthread_t	thread;
-	sem_t		*monitor_sem;
 
-	monitor_sem = NULL;
 	if (create_monitor_sem(philo->philo, philo->vars))
-		exit_error(philo);
+		exit(-1);
 	if (pthread_create(&thread, NULL, routine, philo))
-		exit_error(philo);
+		exit(-1);
 	monitoring(philo);
-	sem_close(philo->vars->game_sem);
-	sem_close(philo->vars->forks_sem);
-	sem_close(philo->vars->eat_sem);
+	sem_close(philo->vars->monitor_sem);
 	exit(philo->philo);
 }

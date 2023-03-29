@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/15 17:56:24 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/28 16:50:00 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/29 13:21:06 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,7 @@ int	print_state(t_philo *philo, const char *msg)
 	vars = philo->vars;
 	sem_wait(philo->vars->game_sem);
 	time = calc_time(philo->vars);
-	if (!is_dead(time, philo->vars->time_to_die, philo->eat_time) && \
-		vars->game_end != 1)
+	if (!is_dead(time, philo->vars->time_to_die, philo->eat_time))
 		printf("%lu %d %s\n", time, philo->philo, msg);
 	else
 		ret = 1;
