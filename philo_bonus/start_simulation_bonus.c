@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 23:08:31 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/29 14:35:44 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/29 15:18:05 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,8 @@ int	create_semaphores(t_vars *vars)
 		printf("Error creating game_sem\n");
 		return (-1);
 	}
-	vars->forks_sem = sem_open("forks_sem", O_CREAT | O_EXCL, 0644, vars->philo_count);
+	vars->forks_sem = sem_open("forks_sem", O_CREAT | O_EXCL, 0644, \
+							vars->philo_count);
 	sem_unlink("forks_sem");
 	if (vars->forks_sem == SEM_FAILED)
 	{
@@ -80,10 +81,9 @@ int	start_sim(t_vars *vars)
 		return (-1);
 	if (create_semaphores(vars))
 		return (-1);
+	calc_time(vars);
 	if (create_processes(vars))
 		return (-1);
-	wait_time(vars->philos, 100);
-	calc_time(vars);
 	sem_post(vars->game_sem);
 	return (0);
 }

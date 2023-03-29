@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/15 17:56:24 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/29 13:21:06 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/29 15:05:46 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,6 @@ void	*routine(void *arg)
 		return (routine_for_odds(philo));
 	sem_wait(philo->vars->game_sem);
 	sem_post(philo->vars->game_sem);
-	calc_time(philo->vars);
 	sem_post(philo->vars->monitor_sem);
 	while (1)
 	{
