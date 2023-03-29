@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:23:12 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/15 16:19:52 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/29 15:26:34 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,13 +42,13 @@ typedef struct s_vars
 typedef struct s_philo
 {
 	pthread_mutex_t	philo_mutex;
-	int			philo;
-	size_t		eat_time;
-	int			eat_times;
-	pthread_t	thread;
-	t_fork		*right;
-	t_fork		*left;
-	t_vars		*vars;
+	int				philo;
+	size_t			eat_time;
+	int				eat_times;
+	pthread_t		thread;
+	t_fork			*right;
+	t_fork			*left;
+	t_vars			*vars;
 }	t_philo;
 
 void	init_vars(t_vars *vars, char **argv);

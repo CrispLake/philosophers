@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 15:22:54 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/15 17:54:30 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/29 15:26:11 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,10 @@ int	check_death(t_philo *philo)
 	return (0);
 }
 
-int	monitor(t_vars *vars)
+int	monitor(t_vars *vars, int end)
 {
 	int	i;
-	int	end;
 
-	end = 0;
 	while (!end)
 	{
 		i = 0;
@@ -45,7 +43,7 @@ int	monitor(t_vars *vars)
 		{
 			if (mutex_lock_error(&vars->philos[i].philo_mutex, 1))
 				return (-1);
-			if (vars->eaten_enough == vars->philo_count || 
+			if (vars->eaten_enough == vars->philo_count || \
 				check_death(&vars->philos[i]))
 			{
 				end = 1;
@@ -112,7 +110,7 @@ int	main(int argc, char **argv)
 		return (-1);
 	if (start_sim(&vars))
 		return (destroy_mutexes(&vars));
-	if (monitor(&vars))
+	if (monitor(&vars, 0))
 		return (destroy_mutexes(&vars));
 	if (wait_all_threads(&vars))
 		return (destroy_mutexes(&vars));

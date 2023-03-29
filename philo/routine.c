@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 10:48:09 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/16 13:31:30 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/29 15:29:56 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	print_state(t_philo *philo, const char *msg)
 	if (mutex_lock_error(&philo->vars->game_mutex, 1))
 		return (-1);
 	time = calc_time(philo->vars);
-	if (!is_dead(time, philo->vars->time_to_die, philo->eat_time) && 
+	if (!is_dead(time, philo->vars->time_to_die, philo->eat_time) && \
 		vars->game_end != 1 && vars->eaten_enough != vars->philo_count)
 		printf("%lu %d %s\n", time, philo->philo, msg);
 	else
