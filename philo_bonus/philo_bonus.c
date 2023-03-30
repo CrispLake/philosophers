@@ -6,7 +6,7 @@
 /*   By: emajuri <emajuri@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/15 17:54:15 by emajuri           #+#    #+#             */
-/*   Updated: 2023/03/29 15:20:28 by emajuri          ###   ########.fr       */
+/*   Updated: 2023/03/30 12:41:54 by emajuri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ int	kill_children(t_vars *vars, int dead)
 		i++;
 	}
 	destroy_sems(vars);
-	system("leaks philo_bonus");
 	return (0);
 }
 
